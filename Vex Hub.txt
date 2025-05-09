@@ -13,8 +13,6 @@ $$ |   $$ | $$$$$$\  $$\   $$\       $$ |  $$ |$$\   $$\ $$$$$$$\
 
 --Vex Hub is Down...
 
-
-
 local StrToNumber = tonumber;
 local Byte = string.byte;
 local Char = string.char;
@@ -198,52 +196,69 @@ local function VMCall(ByteString, vmenv, ...)
 				Enum = Inst[1];
 				if (Enum <= 3) then
 					if (Enum <= 1) then
-						if (Enum > 0) then
-							local A = Inst[2];
-							local B = Stk[Inst[3]];
+						if (Enum == 0) then
+							local B;
+							local A;
+							Stk[Inst[2]] = Env[Inst[3]];
+							VIP = VIP + 1;
+							Inst = Instr[VIP];
+							Stk[Inst[2]] = Inst[3];
+							VIP = VIP + 1;
+							Inst = Instr[VIP];
+							A = Inst[2];
+							Stk[A](Stk[A + 1]);
+							VIP = VIP + 1;
+							Inst = Instr[VIP];
+							Stk[Inst[2]] = Env[Inst[3]];
+							VIP = VIP + 1;
+							Inst = Instr[VIP];
+							Stk[Inst[2]] = Stk[Inst[3]][Inst[4]];
+							VIP = VIP + 1;
+							Inst = Instr[VIP];
+							Stk[Inst[2]] = Stk[Inst[3]][Inst[4]];
+							VIP = VIP + 1;
+							Inst = Instr[VIP];
+							A = Inst[2];
+							B = Stk[Inst[3]];
 							Stk[A + 1] = B;
 							Stk[A] = B[Inst[4]];
+							VIP = VIP + 1;
+							Inst = Instr[VIP];
+							Stk[Inst[2]] = Inst[3];
+							VIP = VIP + 1;
+							Inst = Instr[VIP];
+							A = Inst[2];
+							Stk[A](Unpack(Stk, A + 1, Inst[3]));
+							VIP = VIP + 1;
+							Inst = Instr[VIP];
+							do
+								return;
+							end
 						else
 							Stk[Inst[2]] = Stk[Inst[3]][Inst[4]];
 						end
 					elseif (Enum > 2) then
-						local B;
-						local A;
-						Stk[Inst[2]] = Env[Inst[3]];
-						VIP = VIP + 1;
-						Inst = Instr[VIP];
-						A = Inst[2];
-						B = Stk[Inst[3]];
-						Stk[A + 1] = B;
-						Stk[A] = B[Inst[4]];
-						VIP = VIP + 1;
-						Inst = Instr[VIP];
-						Stk[Inst[2]] = Inst[3];
-						VIP = VIP + 1;
-						Inst = Instr[VIP];
-						A = Inst[2];
-						Stk[A](Unpack(Stk, A + 1, Inst[3]));
-						VIP = VIP + 1;
-						Inst = Instr[VIP];
 						do
 							return;
 						end
 					else
-						Stk[Inst[2]] = Inst[3];
+						local A = Inst[2];
+						Stk[A](Unpack(Stk, A + 1, Inst[3]));
 					end
 				elseif (Enum <= 5) then
-					if (Enum == 4) then
-						do
-							return;
-						end
-					else
+					if (Enum > 4) then
 						Stk[Inst[2]] = Env[Inst[3]];
+					else
+						local A = Inst[2];
+						Stk[A](Stk[A + 1]);
 					end
-				elseif (Enum > 6) then
-					Stk[Inst[2]] = Wrap(Proto[Inst[3]], nil, Env);
+				elseif (Enum == 6) then
+					Stk[Inst[2]] = Inst[3];
 				else
 					local A = Inst[2];
-					Stk[A](Unpack(Stk, A + 1, Inst[3]));
+					local B = Stk[Inst[3]];
+					Stk[A + 1] = B;
+					Stk[A] = B[Inst[4]];
 				end
 				VIP = VIP + 1;
 			end
@@ -251,4 +266,4 @@ local function VMCall(ByteString, vmenv, ...)
 	end
 	return Wrap(Deserialize(), {}, vmenv)(...);
 end
-return VMCall("LOL!033Q0003043Q007461736B03053Q0064656C6179026Q00084000063Q0012053Q00013Q00206Q0002001202000100033Q00020700026Q00063Q000200012Q00043Q00013Q00013Q00033Q00030B3Q004C6F63616C506C6179657203043Q004B69636B03123Q005665782048756220697320446F776E3Q2E00053Q0012033Q00013Q00206Q000200122Q000200038Q000200016Q00017Q00", GetFEnv(), ...);
+return VMCall("LOL!073Q0003043Q0077616974026Q00084003043Q0067616D6503073Q00506C6179657273030B3Q004C6F63616C506C6179657203043Q004B69636B03123Q005665782048756220697320446F776E3Q2E000A3Q00124Q00013Q00122Q000100028Q0002000100124Q00033Q00206Q000400206Q000500206Q000600122Q000200078Q000200016Q00017Q00", GetFEnv(), ...);
